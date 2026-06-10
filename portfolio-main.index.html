@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preetham Murthy B | Full-Stack Software Engineer</title>
+  
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#fbbf24', // Premium Gold
+            brandAlt: '#f59e0b', // Amber
+            dark: '#030712', // Deep Navy / Charcoal
+            surface: '#111827', // Rich Surface Gray
+            muted: '#9ca3af' // Sophisticated Gray
+          },
+          backgroundImage: {
+            'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+            'brand-gradient': 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+          },
+          keyframes: {
+            wipeUp: {
+              '0%': { transform: 'translateY(0)' },
+              '100%': { transform: 'translateY(-100%)', visibility: 'hidden' }
+            },
+            fadeOut: {
+              '0%': { opacity: '1' },
+              '100%': { opacity: '0' }
+            }
+          },
+          animation: {
+            'wipeUp': 'wipeUp 1.2s cubic-bezier(0.7,0,0.3,1) 1s forwards',
+            'fadeOut': 'fadeOut 0.3s ease 0.8s forwards'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @media (pointer: fine) {
+      body, a, button, [role="button"], [data-magnetic], input, textarea, .tilt-card { cursor: none !important; }
+    }
+    
+    /* Fine Film Grain Texture */
+    .grain::before {
+      content: "";
+      position: fixed;
+      top: -100%;
+      left: -100%;
+      width: 300%;
+      height: 300%;
+      background-image: url("https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop");
+      background-repeat: repeat;
+      opacity: 0.04;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: overlay;
+    }
+
+    /* Premium Gold Text Gradients */
+    .text-gradient {
+      background: linear-gradient(to right, #fbbf24, #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .text-gradient-alt {
+      background: linear-gradient(to right, #ffffff, #9ca3af);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-marquee {
+      animation: marquee 25s linear infinite;
+    }
+    
+    .bx-border {
+      border-color: rgba(251, 191, 36, 0.1); /* Subtle gold border */
+    }
+
+    /* Scroll Reveal */
+    .reveal-section {
+      opacity: 0;
+      transform: translateY(3rem);
+      transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal-section.is-revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 3D Parallax Tilt Card Implementation */
+    .tilt-wrapper {
+      perspective: 1500px;
+      transform-style: preserve-3d;
+    }
+    .tilt-card {
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.5s ease, box-shadow 0.5s ease;
+      transform-style: preserve-3d;
+      will-change: transform;
+      position: relative;
+    }
+    .tilt-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(251,191,36,0.06) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+    .tilt-wrapper:hover .tilt-card {
+      background: rgba(17, 24, 39, 0.6); /* surface hex with opacity */
+      backdrop-filter: blur(10px);
+      border-color: rgba(251, 191, 36, 0.3);
+      box-shadow: 0 20px 40px -10px rgba(251, 191, 36, 0.1);
+    }
+    .tilt-wrapper:hover .tilt-card::before {
+      opacity: 1;
+    }
+
+    /* Project Image treatment */
+    .project-image-container {
+      position: relative;
+      overflow: hidden;
+      background: #000;
+      aspect-ratio: 16 / 9;
+      border: 1px solid rgba(251, 191, 36, 0.15);
+      transform: translateZ(30px); /* Pops out during 3D tilt */
+    }
+    .project-image-container::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(45deg, rgba(251, 191, 36, 0.1), transparent);
+      mix-blend-mode: overlay;
+      transition: opacity 0.5s ease;
+    }
+    .project-image-container img {
+      filter: grayscale(70%) sepia(10%) contrast(1.1) brightness(0.9);
+      transition: all 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tilt-wrapper:hover .project-image-container::after {
+      opacity: 0;
+    }
+    .tilt-wrapper:hover .project-image-container img {
+      filter: grayscale(0%) contrast(1.1) brightness(1);
+      transform: scale(1.05);
+    }
+    
+    /* Input Styling */
+    .contact-input {
+      background: transparent;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+      transition: all 0.5s ease;
+      width: 100%;
+      padding: 1.5rem 0;
+      font-size: 1.5rem;
+      outline: none;
+      color: white;
+    }
+    .contact-input:focus {
+      border-color: #fbbf24;
+      padding-left: 1rem;
+      box-shadow: 0 10px 20px -10px rgba(251, 191, 36, 0.1);
+    }
+    .contact-label {
+      color: #9ca3af;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+    }
+
+    /* Negative Cursor Utility with Gold Touch */
+    #cursor-bg {
+      mix-blend-mode: difference;
+      background-color: #fff;
+      box-shadow: 0 0 15px #fbbf24;
+    }
+    #cursor-ring {
+      border-color: rgba(251, 191, 36, 0.5);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-dark text-white font-sans selection:bg-brand selection:text-dark overflow-x-hidden relative grain">
+
+  <!-- WebGL Background - Interactive Wireframe Terrain -->
+  <canvas id="webgl-canvas" class="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none"></canvas>
+
+  <!-- Ambient Background Glow -->
+  <div class="fixed top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-brand opacity-[0.03] blur-[150px] pointer-events-none z-[-1]"></div>
+  <div class="fixed bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-brandAlt opacity-[0.03] blur-[150px] pointer-events-none z-[-1]"></div>
+
+  <!-- Loader - Vibrant Gradient -->
+  <div class="fixed inset-0 z-[1000] bg-brand-gradient flex items-center justify-center animate-wipeUp pointer-events-none">
+    <h1 class="text-dark text-4xl md:text-6xl tracking-tighter uppercase font-black animate-fadeOut text-center px-4">
+      PREETHAM MURTHY B
+    </h1>
+  </div>
+
+  <!-- Reactive Cursor -->
+  <div id="custom-cursor" class="fixed top-0 left-0 pointer-events-none z-[9999] hidden md:flex items-center justify-center">
+    <div id="cursor-ring" class="absolute rounded-full border border-brand/50 -inset-6 transition-transform duration-500 ease-out"></div>
+    <div id="cursor-bg" class="rounded-full flex items-center justify-center transition-all duration-300 w-4 h-4"></div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="fixed top-0 left-0 w-full p-8 md:p-14 flex justify-between items-center z-50 mix-blend-difference">
+    <div data-magnetic class="inline-block">
+      <div class="text-2xl font-black tracking-tighter uppercase text-white">P.</div>
+    </div>
+    <div class="hidden md:flex gap-16 text-[10px] font-black tracking-[0.3em] uppercase opacity-80 text-white">
+      <a href="#work" data-magnetic class="hover:text-brand transition-colors">Experience</a>
+      <a href="#projects" data-magnetic class="hover:text-brand transition-colors">Software</a>
+      <a href="#skills" data-magnetic class="hover:text-brand transition-colors">Expertise</a>
+      <a href="#contact" data-magnetic class="hover:text-brand transition-colors">Connect</a>
+    </div>
+  </nav>
+
+  <main class="max-w-[1920px] mx-auto border-x bx-border bg-dark/30 backdrop-blur-[1px]">
+    
+    <!-- HERO -->
+    <section class="min-h-screen flex flex-col justify-end pb-32 px-8 md:px-24 border-b bx-border relative">
+      <div class="max-w-7xl relative z-10">
+        <h1 class="text-[14vw] lg:text-[10vw] font-black leading-[0.8] tracking-tighter uppercase text-gradient">Preetham</h1>
+        <h1 class="text-[14vw] lg:text-[10vw] font-black leading-[0.8] tracking-tighter uppercase text-gradient-alt opacity-40">Murthy B</h1>
+      </div>
+      
+      <div class="mt-24 grid grid-cols-1 md:grid-cols-12 gap-16 items-end relative z-10">
+        <div class="md:col-span-8 text-2xl md:text-4xl lg:text-5xl font-medium tracking-tighter text-muted leading-[1.2]">
+          Full-Stack Software Engineer specializing in <span class="text-white drop-shadow-[0_0_10px_rgba(251,191,36,0.3)]">SaaS & AI Systems</span>. Building secure, distributed architectures.
+        </div>
+        <div class="md:col-span-4 flex flex-col gap-6 text-[10px] text-muted font-black tracking-[0.2em] uppercase md:text-right">
+          <div><p class="mb-2 opacity-40">Identity</p><p class="text-brand">Software Engineer</p></div>
+          <div><p class="mb-2 opacity-40">Currently at</p><p class="text-white">Flexilant Works</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="work" class="border-b bx-border reveal-section">
+      <div class="px-8 md:px-24 py-24 border-b bx-border bg-gradient-to-b from-dark to-transparent">
+        <h2 class="text-7xl md:text-[10rem] font-black tracking-tighter uppercase leading-none text-white opacity-90">Experience</h2>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3">
+        <!-- Flexilant Works (Using Tilt Wrapper) -->
+        <div class="tilt-wrapper border-b lg:border-b-0 lg:border-r bx-border p-8 md:p-12 group">
+          <div class="tilt-card flex flex-col justify-between min-h-[600px] p-8 h-full rounded-2xl border border-transparent">
+            <div>
+              <div class="flex justify-between items-start mb-16 transform translate-z-[10px]">
+                <span class="text-[10px] font-black uppercase text-brand tracking-widest">2025 — Present</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-brand group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform duration-500"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+              </div>
+              <h3 class="text-4xl md:text-5xl font-black uppercase text-white leading-tight mb-6 transform translate-z-[20px]">Associate<br>Software Eng.</h3>
+              <p class="text-xl text-brand font-bold mb-10 transform translate-z-[15px] drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">Flexilant Works</p>
+              <ul class="space-y-4 text-base text-muted group-hover:text-gray-300 transition-colors font-medium leading-relaxed transform translate-z-[10px]">
+                <li>• Key contributor to Agileo (low-code SaaS): implemented <strong class="text-white">Keycloak auth flows</strong>, role scoping, and BFF integrations.</li>
+                <li>• Designed <strong class="text-white">REST APIs with FastAPI</strong>; enforced JWT-based RBAC and tenant isolation.</li>
+                <li>• Integrated <strong class="text-white">gRPC service communication</strong> and assisted with PostgreSQL / MongoDB data models.</li>
+              </ul>
+            </div>
+            <div class="mt-8 flex flex-wrap gap-3 transform translate-z-[15px]">
+              <span class="px-4 py-1.5 border border-brand/30 rounded-full text-[9px] font-black uppercase text-brand bg-brand/5">Keycloak</span>
+              <span class="px-4 py-1.5 border border-brand/30 rounded-full text-[9px] font-black uppercase text-brand bg-brand/5">FastAPI</span>
+              <span class="px-4 py-1.5 border border-brand/30 rounded-full text-[9px] font-black uppercase text-brand bg-brand/5">gRPC</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- VASS Software -->
+        <div class="tilt-wrapper border-b lg:border-b-0 lg:border-r bx-border p-8 md:p-12 group">
+          <div class="tilt-card flex flex-col justify-between min-h-[600px] p-8 h-full rounded-2xl border border-transparent">
+            <div>
+              <div class="flex justify-between items-start mb-16 transform translate-z-[10px]">
+                <span class="text-[10px] font-black uppercase text-brand tracking-widest">2023</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-brand group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform duration-500"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+              </div>
+              <h3 class="text-4xl md:text-5xl font-black uppercase text-white leading-tight mb-6 transform translate-z-[20px]">Software Dev.<br>Intern</h3>
+              <p class="text-xl text-brand font-bold mb-10 transform translate-z-[15px] drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">VASS Software</p>
+              <ul class="space-y-4 text-base text-muted group-hover:text-gray-300 transition-colors font-medium leading-relaxed transform translate-z-[10px]">
+                <li>• Supported HIMS feature development using <strong class="text-white">SQL Server Management Studio</strong>.</li>
+                <li>• Followed structured enterprise SDLC practices to maintain high system reliability.</li>
+                <li>• Collaborated on database-driven feature optimization for medical lookup modules.</li>
+              </ul>
+            </div>
+            <div class="mt-8 flex flex-wrap gap-3 transform translate-z-[15px]">
+              <span class="px-4 py-1.5 border border-brand/30 rounded-full text-[9px] font-black uppercase text-brand bg-brand/5">SQL Server</span>
+              <span class="px-4 py-1.5 border border-brand/30 rounded-full text-[9px] font-black uppercase text-brand bg-brand/5">SDLC</span>
+              <span class="px-4 py-1.5 border border-brand/30 rounded-full text-[9px] font-black uppercase text-brand bg-brand/5">HIMS</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- AWS Internship -->
+        <div class="tilt-wrapper p-8 md:p-12 group">
+          <div class="tilt-card flex flex-col justify-between min-h-[600px] p-8 h-full rounded-2xl border border-transparent">
+            <div>
+              <div class="flex justify-between items-start mb-16 transform translate-z-[10px]">
+                <span class="text-[10px] font-black uppercase text-brand tracking-widest">2024</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-brand group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform duration-500"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+              </div>
+              <h3 class="text-4xl md:text-5xl font-black uppercase text-white leading-tight mb-6 transform translate-z-[20px]">AWS Internship<br>Program</h3>
+              <p class="text-xl text-brand font-bold mb-10 transform translate-z-[15px] drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">Cloud Infrastructure</p>
+              <ul class="space-y-4 text-base text-muted group-hover:text-gray-300 transition-colors font-medium leading-relaxed transform translate-z-[10px]">
+                <li>• Mastered cloud fundamentals and core AWS services through intensive hands-on labs.</li>
+                <li>• Implemented scalable cloud-native architectures focusing on high availability.</li>
+                <li>• Analyzed cloud deployment patterns for secure enterprise applications.</li>
+              </ul>
+            </div>
+            <div class="mt-8 flex flex-wrap gap-3 transform translate-z-[15px]">
+              <span class="px-4 py-1.5 border border-brand/30 rounded-full text-[9px] font-black uppercase text-brand bg-brand/5">AWS</span>
+              <span class="px-4 py-1.5 border border-brand/30 rounded-full text-[9px] font-black uppercase text-brand bg-brand/5">Cloud</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS (Showcase) -->
+    <section id="projects" class="border-b bx-border reveal-section">
+      <div class="px-8 md:px-24 py-24 border-b bx-border bg-gradient-to-b from-dark to-transparent">
+        <h2 class="text-7xl md:text-[10rem] font-black tracking-tighter uppercase leading-none text-gradient">Showcase</h2>
+      </div>
+      
+      <!-- TruthLens AI -->
+      <div class="tilt-wrapper border-b bx-border p-8 md:p-24 group">
+        <div class="tilt-card rounded-[3rem] border border-transparent p-4 md:p-12">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+            <div class="lg:col-span-6 flex flex-col justify-center transform translate-z-[20px]">
+              <span class="text-[10px] font-black uppercase text-brand mb-10 block tracking-widest">AI & Media Forensic // 2026</span>
+              <h3 class="text-7xl md:text-9xl font-black uppercase leading-[0.8] mb-10 text-white tracking-tighter group-hover:text-brand transition-colors duration-500">TruthLens AI</h3>
+              <p class="text-2xl text-gray-300 font-medium mb-12 leading-tight">Architected a modular AI-assisted pipeline for image and video deepfake detection.</p>
+              <ul class="space-y-6 text-lg md:text-xl text-muted group-hover:text-gray-200 transition-colors font-medium leading-relaxed">
+                <li>• Implemented frame extraction (<strong class="text-white">FFmpeg</strong>) and frame-level forensic analysis.</li>
+                <li>• Built a <strong class="text-white">multi-signal authenticity risk scoring engine</strong> to assess media authenticity.</li>
+                <li>• Designed Angular UI for drag-and-drop upload and real-time forensic reports.</li>
+              </ul>
+            </div>
+            <div class="lg:col-span-6">
+              <div class="project-image-container rounded-[2rem] md:rounded-[3rem] shadow-2xl shadow-brand/5">
+                <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2070&auto=format&fit=crop" alt="TruthLens AI Dashboard" class="w-full h-full object-cover">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VASS Corporate Website -->
+      <div class="tilt-wrapper border-b bx-border p-8 md:p-24 group">
+        <div class="tilt-card rounded-[3rem] border border-transparent p-4 md:p-12">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+            <div class="lg:col-span-6 lg:order-2 flex flex-col justify-center transform translate-z-[20px]">
+              <span class="text-[10px] font-black uppercase text-brand mb-10 block tracking-widest">Full-Stack Implementation // 2026</span>
+              <h3 class="text-7xl md:text-9xl font-black uppercase leading-[0.8] mb-10 text-white tracking-tighter group-hover:text-brand transition-colors duration-500">VASS Web</h3>
+              <p class="text-2xl text-gray-300 font-medium mb-12 leading-tight">Developed responsive frontend features and integrated secure corporate API endpoints.</p>
+              <ul class="space-y-6 text-lg md:text-xl text-muted group-hover:text-gray-200 transition-colors font-medium leading-relaxed">
+                <li>• Built with <strong class="text-white">Angular and TypeScript</strong> focusing on performance-oriented components.</li>
+                <li>• Successfully integrated diverse third-party APIs for seamless business operations.</li>
+                <li>• Managed the complete UI deployment lifecycle and component standardization.</li>
+              </ul>
+            </div>
+            <div class="lg:col-span-6 lg:order-1">
+              <div class="project-image-container rounded-[2rem] md:rounded-[3rem] shadow-2xl shadow-brand/5">
+                <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop" alt="Corporate Website Interface" class="w-full h-full object-cover">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quote Vault -->
+      <div class="tilt-wrapper p-8 md:p-24 group">
+        <div class="tilt-card rounded-[3rem] border border-transparent p-4 md:p-12">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+            <div class="lg:col-span-6 flex flex-col justify-center transform translate-z-[20px]">
+              <span class="text-[10px] font-black uppercase text-brand mb-10 block tracking-widest">Secure Management // 2025</span>
+              <h3 class="text-7xl md:text-9xl font-black uppercase leading-[0.8] mb-10 text-white tracking-tighter group-hover:text-brand transition-colors duration-500">Quote Vault</h3>
+              <p class="text-2xl text-gray-300 font-medium mb-12 leading-tight">Secure lifecycle management system for corporate data and quote processing.</p>
+              <ul class="space-y-6 text-lg md:text-xl text-muted group-hover:text-gray-200 transition-colors font-medium leading-relaxed">
+                <li>• Developed REST APIs with <strong class="text-white">FastAPI</strong> and <strong class="text-white">MongoDB</strong> for high-availability storage.</li>
+                <li>• Implemented strict authentication checks and data validation for quote security.</li>
+                <li>• Designed a clean frontend integration flow using Angular.</li>
+              </ul>
+            </div>
+            <div class="lg:col-span-6">
+              <div class="project-image-container rounded-[2rem] md:rounded-[3rem] shadow-2xl shadow-brand/5">
+                <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=2070&auto=format&fit=crop" alt="Quote Vault Secure System" class="w-full h-full object-cover">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TECHNICAL SKILLS -->
+    <section id="skills" class="border-b bx-border reveal-section">
+      <div class="px-8 md:px-24 py-24 border-b bx-border bg-gradient-to-b from-dark to-transparent">
+        <h2 class="text-7xl md:text-[10rem] font-black tracking-tighter uppercase leading-none text-gradient">Expertise</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <!-- Frontend -->
+        <div class="tilt-wrapper border-b md:border-r bx-border p-8 md:p-12 group">
+          <div class="tilt-card p-8 h-full rounded-2xl border border-transparent">
+            <p class="text-[10px] font-black uppercase mb-8 tracking-widest text-brand transform translate-z-[10px]">Frontend</p>
+            <ul class="text-2xl font-bold uppercase space-y-4 text-gray-300 group-hover:text-white transition-colors transform translate-z-[20px]">
+              <li>Angular</li>
+              <li>TypeScript</li>
+              <li>HTML5 / CSS3</li>
+              <li>Tailwind CSS</li>
+            </ul>
+          </div>
+        </div>
+        <!-- Backend -->
+        <div class="tilt-wrapper border-b lg:border-r bx-border p-8 md:p-12 group">
+           <div class="tilt-card p-8 h-full rounded-2xl border border-transparent">
+            <p class="text-[10px] font-black uppercase mb-8 tracking-widest text-brand transform translate-z-[10px]">Backend</p>
+            <ul class="text-2xl font-bold uppercase space-y-4 text-gray-300 group-hover:text-white transition-colors transform translate-z-[20px]">
+              <li>Python (FastAPI)</li>
+              <li>REST APIs</li>
+              <li>gRPC Comm.</li>
+              <li>Asynchronous Processing</li>
+            </ul>
+          </div>
+        </div>
+        <!-- Auth & Security -->
+        <div class="tilt-wrapper border-b bx-border p-8 md:p-12 group">
+           <div class="tilt-card p-8 h-full rounded-2xl border border-transparent">
+            <p class="text-[10px] font-black uppercase mb-8 tracking-widest text-brand transform translate-z-[10px]">Auth & Security</p>
+            <ul class="text-2xl font-bold uppercase space-y-4 text-gray-300 group-hover:text-white transition-colors transform translate-z-[20px]">
+              <li>Keycloak</li>
+              <li>OAuth2 / OIDC</li>
+              <li>JWT / RBAC</li>
+              <li>Multi-tenant Design</li>
+            </ul>
+          </div>
+        </div>
+        <!-- Databases -->
+        <div class="tilt-wrapper border-b md:border-r bx-border p-8 md:p-12 group">
+           <div class="tilt-card p-8 h-full rounded-2xl border border-transparent">
+            <p class="text-[10px] font-black uppercase mb-8 tracking-widest text-brand transform translate-z-[10px]">Databases</p>
+            <ul class="text-2xl font-bold uppercase space-y-4 text-gray-300 group-hover:text-white transition-colors transform translate-z-[20px]">
+              <li>PostgreSQL</li>
+              <li>MongoDB</li>
+              <li>SQL Server</li>
+            </ul>
+          </div>
+        </div>
+        <!-- AI / Media -->
+        <div class="tilt-wrapper border-b lg:border-r bx-border p-8 md:p-12 group">
+           <div class="tilt-card p-8 h-full rounded-2xl border border-transparent">
+            <p class="text-[10px] font-black uppercase mb-8 tracking-widest text-brand transform translate-z-[10px]">AI / Media</p>
+            <ul class="text-2xl font-bold uppercase space-y-4 text-gray-300 group-hover:text-white transition-colors transform translate-z-[20px]">
+              <li>LLM API Integration</li>
+              <li>Prompt Engineering</li>
+              <li>FFmpeg Extraction</li>
+              <li>Forensic Signals</li>
+            </ul>
+          </div>
+        </div>
+        <!-- Tools -->
+        <div class="tilt-wrapper border-b bx-border p-8 md:p-12 group">
+           <div class="tilt-card p-8 h-full rounded-2xl border border-transparent">
+            <p class="text-[10px] font-black uppercase mb-8 tracking-widest text-brand transform translate-z-[10px]">Tools</p>
+            <ul class="text-2xl font-bold uppercase space-y-4 text-gray-300 group-hover:text-white transition-colors transform translate-z-[20px]">
+              <li>Git / Docker</li>
+              <li>Postman</li>
+              <li>WSL / Ubuntu</li>
+              <li>Agile Methodology</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EDUCATION -->
+    <section class="border-b bx-border reveal-section">
+      <div class="grid grid-cols-1 lg:grid-cols-2">
+        <div class="p-12 md:p-24 border-b lg:border-b-0 lg:border-r bx-border tilt-wrapper group">
+          <div class="tilt-card p-8 h-full rounded-2xl border border-transparent">
+            <h2 class="text-7xl md:text-9xl font-black uppercase leading-none mb-16 text-gradient transform translate-z-[20px]">Edu<br>cation</h2>
+            <div class="space-y-16 transform translate-z-[10px]">
+              <div>
+                <p class="text-[10px] font-black uppercase text-brand mb-4 tracking-widest">2021 — 2025</p>
+                <h4 class="text-4xl md:text-5xl font-bold uppercase mb-2 text-white">B.Tech - CSBS</h4>
+                <p class="text-2xl text-gray-300 font-medium">Sri Eshwar College of Engineering</p>
+                <p class="mt-6 text-sm text-brand uppercase tracking-[0.2em] font-black">Computer Science & Business Systems</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="p-12 md:p-24 flex flex-col justify-center space-y-16 tilt-wrapper group">
+          <div class="tilt-card p-8 h-full rounded-2xl border border-transparent space-y-12">
+            <div class="border-l-2 border-brand/30 pl-10 hover:border-brand transition-colors transform translate-z-[15px]">
+              <p class="text-[10px] font-black uppercase text-brand mb-4 tracking-widest">Achievements</p>
+              <h4 class="text-3xl font-bold uppercase mb-2 text-white">OneYes Hackathon</h4>
+              <p class="text-muted font-medium text-lg">Awarded <span class="text-white drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]">Best Team</span> for SkillSync implementation.</p>
+            </div>
+            <div class="border-l-2 border-brand/30 pl-10 hover:border-brand transition-colors transform translate-z-[15px]">
+              <p class="text-[10px] font-black uppercase text-brand mb-4 tracking-widest">DSA</p>
+              <h4 class="text-3xl font-bold uppercase mb-2 text-white">LeetCode</h4>
+              <p class="text-muted font-medium text-lg">Solved <span class="text-white drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]">200+ problems</span> focusing on Algorithms.</p>
+            </div>
+            <div class="border-l-2 border-brand/30 pl-10 hover:border-brand transition-colors transform translate-z-[15px]">
+              <p class="text-[10px] font-black uppercase text-brand mb-4 tracking-widest">Certifications</p>
+              <h4 class="text-3xl font-bold uppercase mb-2 text-white">AWS Foundational</h4>
+              <p class="text-muted font-medium text-lg">Core AWS Services and Cloud Fundamentals Lab proficiency.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS MARQUEE -->
+    <section class="border-b bx-border py-24 overflow-hidden reveal-section bg-gradient-to-r from-dark via-[#080d1a] to-dark">
+      <div class="flex animate-marquee whitespace-nowrap items-center">
+        <div class="flex items-center gap-24 px-12" id="marquee-content"></div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="reveal-section border-b bx-border">
+      <div class="grid grid-cols-1 lg:grid-cols-2">
+        <div class="p-12 md:p-24 border-b lg:border-b-0 lg:border-r bx-border bg-gradient-to-br from-[#050810] to-dark">
+          <h2 class="text-7xl md:text-[10rem] font-black uppercase leading-[0.8] mb-12 text-white">Let's<br><span class="text-gradient">Chat.</span></h2>
+          <div class="space-y-10 mt-24">
+            <a href="mailto:preetham0801@gmail.com" class="block text-2xl md:text-5xl font-bold hover:text-brand transition-all drop-shadow-[0_0_10px_rgba(251,191,36,0.2)]">preetham0801@gmail.com</a>
+            <p class="text-gray-400 text-xl max-w-sm leading-relaxed font-medium">Specializing in multi-tenant SaaS platforms and secure AI forensic architectures.</p>
+          </div>
+        </div>
+        <div class="p-12 md:p-24 bg-dark">
+          <form class="space-y-20">
+            <div class="relative group">
+              <label class="contact-label">Identification</label>
+              <input type="text" class="contact-input" placeholder="What is your name?">
+            </div>
+            <div class="relative group">
+              <label class="contact-label">Contact Path</label>
+              <input type="email" class="contact-input" placeholder="email@address.com">
+            </div>
+            <div class="relative group">
+              <label class="contact-label">The Vision</label>
+              <textarea rows="2" class="contact-input" placeholder="Discussing TruthLens AI or SaaS..."></textarea>
+            </div>
+            <button type="submit" data-magnetic class="group relative inline-flex items-center justify-center py-10 px-20 bg-brand-gradient rounded-full text-dark font-black uppercase text-[10px] tracking-[0.3em] overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(251,191,36,0.2)]">
+              <span class="relative z-10">Initialize Connection</span>
+              <div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="p-12 md:p-20 flex flex-col md:flex-row justify-between items-center text-[10px] font-black uppercase tracking-[0.4em] text-muted opacity-80">
+      <div>&copy; 2026 PREETHAM MURTHY B.</div>
+      <div class="flex gap-16 mt-12 md:mt-0">
+        <a href="#" data-magnetic class="hover:text-brand transition-colors">LinkedIn</a>
+        <a href="#" data-magnetic class="hover:text-brand transition-colors">GitHub</a>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    // Marquee Population
+    const techStack = ["Angular", "TypeScript", "FastAPI", "Python", "Keycloak", "OAuth2", "JWT", "gRPC", "PostgreSQL", "MongoDB", "SQL Server", "Docker", "FFmpeg", "Git", "Agile"];
+    const marquee = document.getElementById('marquee-content');
+    [...techStack, ...techStack].forEach(tech => {
+      const div = document.createElement('div');
+      div.className = 'flex items-center gap-24';
+      div.innerHTML = `<span class="text-[12vw] md:text-[8rem] font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-brand to-brandAlt opacity-40 hover:opacity-100 transition-opacity cursor-default">${tech}</span><span class="text-5xl text-brand/20">/</span>`;
+      marquee.appendChild(div);
+    });
+
+    // Cursor Logic
+    const cursor = document.getElementById('custom-cursor');
+    const ring = document.getElementById('cursor-ring');
+    const dot = document.getElementById('cursor-bg');
+    let mX = 0, mY = 0, cX = 0, cY = 0;
+
+    window.addEventListener('mousemove', e => {
+      mX = e.clientX; mY = e.clientY;
+      cursor.classList.remove('hidden');
+    });
+
+    const updateCursor = () => {
+      cX += (mX - cX) * 0.15;
+      cY += (mY - cY) * 0.15;
+      cursor.style.transform = `translate3d(${cX}px, ${cY}px, 0) translate3d(-50%, -50%, 0)`;
+      requestAnimationFrame(updateCursor);
+    };
+    updateCursor();
+
+    window.addEventListener('mouseover', e => {
+      const isClickable = e.target.closest('a, button, input, textarea, [data-magnetic]');
+      const isCard = e.target.closest('.tilt-wrapper');
+      if (isCard || isClickable) {
+        dot.className = "w-16 h-16 bg-white rounded-full transition-all duration-300 shadow-[0_0_20px_#fbbf24]";
+        ring.style.transform = "scale(1.4)";
+        ring.style.opacity = "1";
+      } else {
+        dot.className = "w-4 h-4 bg-white rounded-full transition-all duration-300 shadow-[0_0_10px_#fbbf24]";
+        ring.style.transform = "scale(1)";
+        ring.style.opacity = "0.5";
+      }
+    });
+
+    // Magnetic Buttons
+    const magnets = document.querySelectorAll('[data-magnetic]');
+    magnets.forEach(el => {
+      el.addEventListener('mousemove', e => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left - r.width/2) * 0.4;
+        const y = (e.clientY - r.top - r.height/2) * 0.4;
+        el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+        el.style.transition = "transform 0.1s linear";
+      });
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = `translate3d(0,0,0)`;
+        el.style.transition = "transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)";
+      });
+    });
+
+    // 3D Tilt Logic for Cards
+    const tiltWrappers = document.querySelectorAll('.tilt-wrapper');
+    tiltWrappers.forEach(wrapper => {
+      const card = wrapper.querySelector('.tilt-card');
+      if(!card) return;
+      
+      wrapper.addEventListener('mousemove', e => {
+        const rect = wrapper.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = ((y - centerY) / centerY) * -10; // Max tilt 10 deg
+        const rotateY = ((x - centerX) / centerX) * 10;
+        
+        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+      });
+      
+      wrapper.addEventListener('mouseleave', () => {
+        card.style.transform = `rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+      });
+    });
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if(e.isIntersecting) {
+          e.target.classList.add('is-revealed');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal-section').forEach(el => observer.observe(el));
+
+    // PREMIUM 3D THREE.JS ANIMATION - Interactive Terrain Wave
+    window.addEventListener('load', () => {
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x030712, 0.02); // Matches dark navy
+
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl-canvas'), alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Create flowing wireframe terrain
+      const geometry = new THREE.PlaneGeometry(120, 100, 60, 50);
+      const material = new THREE.MeshBasicMaterial({
+          color: 0xfbbf24, // Premium Gold
+          wireframe: true,
+          transparent: true,
+          opacity: 0.15,
+          blending: THREE.AdditiveBlending
+      });
+      const plane = new THREE.Mesh(geometry, material);
+      plane.rotation.x = -Math.PI / 2.2;
+      plane.position.y = -15;
+      scene.add(plane);
+
+      camera.position.z = 20;
+      camera.position.y = 5;
+
+      let mouseX = 0, mouseY = 0;
+      const windowHalfX = window.innerWidth / 2;
+      const windowHalfY = window.innerHeight / 2;
+
+      document.addEventListener('mousemove', (event) => {
+        mouseX = (event.clientX - windowHalfX) * 0.002;
+        mouseY = (event.clientY - windowHalfY) * 0.002;
+      });
+
+      const clock = new THREE.Clock();
+      
+      const animate = () => {
+        const time = clock.getElapsedTime() * 0.4;
+        
+        // Animate Terrain Vertices
+        const positionAttribute = plane.geometry.attributes.position;
+        const vertex = new THREE.Vector3();
+        
+        for (let i = 0; i < positionAttribute.count; i++) {
+            vertex.fromBufferAttribute(positionAttribute, i);
+            // Dynamic wave math
+            vertex.z = Math.sin(vertex.x * 0.15 + time) * 3 + Math.cos(vertex.y * 0.15 + time * 0.8) * 3;
+            positionAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z);
+        }
+        positionAttribute.needsUpdate = true;
+
+        // Interactive camera pan
+        camera.position.x += (mouseX * 15 - camera.position.x) * 0.05;
+        camera.position.y += (-mouseY * 15 + 8 - camera.position.y) * 0.05;
+        camera.lookAt(scene.position);
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      };
+      
+      animate();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth/window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    });
+  </script>
+</body>
+</html>
